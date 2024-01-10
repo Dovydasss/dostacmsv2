@@ -252,7 +252,7 @@
 
     <footer class="footer py-3 bg-light mt-auto">
         <div class="container text-center">
-            <span class="text-muted">Copyright © 2023 Dosta - Version 3.1.0</span>
+            <span class="text-muted">Copyright © 2023 Dosta - Version 0.0.1</span>
         </div>
     </footer>
 

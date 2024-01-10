@@ -15,9 +15,9 @@ return new class extends Migration
     {
         Schema::create('page_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('title')->comment('The title of the page, shown in browser tab.');
-            $table->string('icon')->nullable()->comment('The file path of the page icon.');
-            $table->text('description')->comment('The description of the page, for SEO purposes.');
+            $table->string('title');
+            $table->string('icon')->nullable();
+            $table->text('description');
             $table->timestamps();
         });
     }

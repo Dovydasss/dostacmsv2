@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Colors;
 use App\Models\Menu;
 use App\Models\Page;
 use App\Models\Footer;
@@ -44,6 +45,22 @@ class DatabaseSeeder extends Seeder
             'published' => '1'
         ]);
 
+        Page::create([
+            'title' => 'Login',
+            'slug' => 'login',
+            'content' => '',
+            'published' => '1'
+        ]);
+
+        Page::create([
+            'title' => 'Register',
+            'slug' => 'register',
+            'content' => '',
+            'published' => '1'
+        ]);
+
+
+
     Menu::create([
         'name' => 'Main_menu',
     ]);
@@ -59,7 +76,9 @@ class DatabaseSeeder extends Seeder
         'url' => 'http://127.0.0.1:8000/contacts',
         'order' => '2'
     ]);
+
     Header::create([
+        'show_header' => '1',
         'header_image' => 'header/cyber-circuit-board-digital-art-1920-1080-v0-3pz4y9q9tpoa1.jpg',
         'width' => '100',
         'height' => '25'
@@ -84,7 +103,7 @@ class DatabaseSeeder extends Seeder
     ]);
     PageSetting::create([
         'title' => 'Dosta CMS',
-        'icon' => 'public/icons/OMRSpz1Gla0eHOqHwBExmg4cOGKzFR7IsPwhHW2E.jpg',
+        'icon' => 'icon/icon-1704444474.jpg',
         'description' => 'Dosta CMS'
     ]);
 
@@ -101,11 +120,39 @@ class DatabaseSeeder extends Seeder
         'guard_name' => 'web'
     ]);
 
+    Colors::create([
+        'name' => 'menu_background_color',
+        'color' => '#d6d6d6'
+    ]);
+    Colors::create([
+        'name' => 'background_color',
+        'color' => '#ffffff'
+    ]);
+    Colors::create([
+        'name' => 'footer_background_color',
+        'color' => '#d6d6d6'
+    ]);
+    Colors::create([
+        'name' => 'text_color',
+        'color' => '#000000'
+    ]);
+    Colors::create([
+        'name' => 'menu_text_color',
+        'color' => '#000000'
+    ]);
+    Colors::create([
+        'name' => 'footer_text_color',
+        'color' => '#000000'
+    ]);
+
 
     $pivotData = [
         ['menu_id' => 1, 'page_id' => 1],
         ['menu_id' => 1, 'page_id' => 2],
+        ['menu_id' => 1, 'page_id' => 3],
+        ['menu_id' => 1, 'page_id' => 4],
     ];
+    
 
     $this->call([
         UserSeeder::class

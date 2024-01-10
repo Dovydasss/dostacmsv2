@@ -1,4 +1,3 @@
-
 @extends('layout.admin')
 
 @section('content')
@@ -8,6 +7,8 @@
 <style>
 #gridContainer {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    max-width: 100%; /* Ensures the grid does not exceed the width of its container */
+    overflow-x: auto;
     /* Adjust minmax values based on your design needs */
 }
 
@@ -40,6 +41,8 @@
         cursor: se-resize;
         /* Cursor indicates resizable area */
     }
+
+    
     @media screen and (max-width: 1920px) {
     .grid-cell {
         min-width: 100px;
@@ -67,19 +70,31 @@
     <div class="col">
 
         <!-- Grid Configuration Form -->
-        <form id="gridForm">
-            <div class="form-group">
-                <label for="rows">Number of Rows:</label>
-                <input type="number" id="rows" name="rows" min="1" class="form-control" placeholder="Enter number of rows">
+        <form id="gridForm" class="form-inline">
+    <div class="form-row align-items-center">
+        <div class="col-auto">
+            <label for="rows" class="sr-only">Number of Rows</label>
+            <div class="input-group mb-2">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">Rows</div>
+                </div>
+                <input type="number" class="form-control" id="rows" placeholder="Enter number of rows">
             </div>
-            <div class="form-group">
-                <label for="columns">Number of Columns:</label>
-                <input type="number" id="columns" name="columns" min="1" class="form-control" placeholder="Enter number of columns">
+        </div>
+        <div class="col-auto">
+            <label for="columns" class="sr-only">Number of Columns</label>
+            <div class="input-group mb-2">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">Columns</div>
+                </div>
+                <input type="number" class="form-control" id="columns" placeholder="Enter number of columns">
             </div>
-            <button type="submit" class="btn btn-primary">Create Grid</button>
-        </form>
-
-        <!-- Grid Container -->
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary mb-2">Create Grid</button>
+        </div>
+    </div>
+</form>
 
 
 
@@ -96,6 +111,8 @@
 @include('layout.footer') {{-- Include the footer.blade.php file here --}}
 
 
+
+
 <!-- Available Blocks Area -->
 <div class="col-md-3">
     <h2>Available Blocks</h2>
@@ -110,10 +127,103 @@
     </div>
 </div>
 
+
 <button id="saveChanges" class="btn btn-success">Save Changes</button>
+<button id="deleteGrid" class="btn btn-danger">Delete Grid</button>
 
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    var gridLayout = <?php echo json_encode($gridLayout); ?>;
+    loadExistingGridLayout(gridLayout);
+});
+
+
+
+function loadExistingGridLayout(gridLayout) {
+    if (!gridLayout || gridLayout.length === 0) return;
+
+    rebuildGrid(gridLayout); // Create the grid based on the layout
+    placeExistingBlocks(gridLayout); // Place the blocks in the grid
+}
+
+function rebuildGrid(gridLayout) {
+    const gridContainer = document.getElementById('gridContainer');
+    gridContainer.innerHTML = '';
+
+    const numColumns = Math.max(...gridLayout.map(item => item.column));
+    gridContainer.style.display = 'grid';
+    gridContainer.style.gridTemplateColumns = `repeat(${numColumns}, 1fr)`;
+
+    gridLayout.sort((a, b) => a.row - b.row || a.column - b.column);
+
+    gridLayout.forEach(item => {
+        const cell = document.createElement('div');
+        cell.className = 'grid-cell';
+        cell.style.gridRowStart = item.row;
+        cell.style.gridColumnStart = item.column;
+        cell.style.width = item.width + 'px';
+        cell.style.height = item.height + 'px';
+        cell.setAttribute('data-row', item.row);
+        cell.setAttribute('data-column', item.column);
+
+        addEventListenersToCell(cell);
+
+        gridContainer.appendChild(cell);
+    });
+}
+
+
+function placeExistingBlocks(gridLayout) {
+    gridLayout.forEach(item => {
+        if (item.blockId) {
+            const blockElement = document.getElementById(item.blockId);
+            if (blockElement) {
+                const cellSelector = `.grid-cell[data-row="${item.row}"][data-column="${item.column}"]`;
+                const cell = document.querySelector(cellSelector);
+                if (cell) {
+                    displayBlockContent(blockElement, cell); // Display the block content
+                }
+            }
+        }
+    });
+}
+
+
+function addEventListenersToCell(cell) {
+    cell.ondragover = allowDrop;
+    cell.ondrop = function(event) {
+        drop(event, cell);
+    };
+    const resizeHandle = document.createElement('div');
+    resizeHandle.className = 'resize-handle';
+    resizeHandle.onmousedown = initiateResize;
+    cell.appendChild(resizeHandle);
+
+    cell.addEventListener('click', function(event) {
+        if (cell.children.length > 1) {
+            const blockId = cell.getAttribute('data-block-id');
+            if (blockId) {
+                const originalBlock = document.getElementById(blockId);
+                if (originalBlock) {
+                    originalBlock.style.display = ''; // Show the block in the available blocks
+                    cell.innerHTML = ''; // Clear the cell
+                    cell.appendChild(resizeHandle); // Re-add the resize handle
+                    cell.removeAttribute('data-block-id'); // Remove block ID attribute
+                }
+            }
+        }
+    });
+}
+
+
+
+
+
+
+
+// Load the grid layout when the page loads
+
     document.getElementById('gridForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const rows = document.getElementById('rows').value;
@@ -146,52 +256,35 @@
 
 
     function createGrid(rows, columns) {
-        numRows = parseInt(rows, 10); // Ensure conversion to a number
-        numColumns = parseInt(columns, 10);
-        const gridContainer = document.getElementById('gridContainer');
-        storeCurrentGridState(); // Clear any previous grid state
-        gridContainer.innerHTML = ''; // Clear the grid
+        numRows = parseInt(rows, 10);
+    numColumns = parseInt(columns, 10);
+    const gridContainer = document.getElementById('gridContainer');
+    storeCurrentGridState();
+    gridContainer.innerHTML = '';
 
-        gridContainer.style.display = 'grid';
-        gridContainer.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-        gridContainer.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
+    gridContainer.style.display = 'grid';
+    gridContainer.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+    gridContainer.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
 
-        for (let i = 0; i < rows; i++) {
-            for (let j = 0; j < columns; j++) {
-                const cell = document.createElement('div');
-                cell.className = 'grid-cell';
-                cell.style.border = '1px solid #ddd';
-                cell.style.minHeight = '100px'; // Default minimum height
-                cell.style.minWidth = '100px'; // Default minimum width
-                cell.dataset.gridWidth = '100'; // Default width in pixels
-                cell.dataset.gridHeight = '100'; // Default height in pixels
-                cell.ondragover = allowDrop;
-                cell.ondrop = drop.bind(null, i, j);
+    for (let i = 1; i <= rows; i++) {
+        for (let j = 1; j <= columns; j++) {
+            const cell = document.createElement('div');
+            cell.className = 'grid-cell';
+            cell.style.border = '1px solid #ddd';
+            cell.style.minHeight = '100px';
+            cell.style.minWidth = '100px';
+            cell.dataset.gridWidth = '100';
+            cell.dataset.gridHeight = '100';
+            cell.setAttribute('data-row', i);
+            cell.setAttribute('data-column', j);
 
-                const resizeHandle = document.createElement('div');
-                resizeHandle.className = 'resize-handle';
-                resizeHandle.onmousedown = initiateResize;
-                cell.appendChild(resizeHandle);
+            addEventListenersToCell(cell);
 
-                cell.addEventListener('click', function(event) {
-                    if (cell.children.length > 1) {
-                        const blockId = cell.getAttribute('data-block-id');
-                        if (blockId) {
-                            const originalBlock = document.getElementById(blockId);
-                            if (originalBlock) {
-                                originalBlock.style.display = ''; // Show the block in the available blocks
-                                cell.innerHTML = ''; // Clear the cell
-                                cell.appendChild(resizeHandle); // Re-add the resize handle
-                                cell.removeAttribute('data-block-id'); // Remove block ID attribute
-                            }
-                        }
-                    }
-                });
-
-                gridContainer.appendChild(cell);
-            }
+            gridContainer.appendChild(cell);
         }
     }
+}
+
 
 
 
@@ -227,40 +320,38 @@
 
 
 
-    function drop(row, col, ev) {
-        ev.preventDefault();
-        var data = ev.dataTransfer.getData("text");
-        var draggedElement = document.getElementById(data);
+    function drop(ev, cell) {
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("text");
+    var draggedElement = document.getElementById(data);
 
-        // Hide the block in the available blocks
-        draggedElement.style.display = 'none';
+    // Hide the block in the available blocks
+    draggedElement.style.display = 'none';
 
-        // Find the actual grid cell from the event target
-        var targetCell = ev.target;
-        while (targetCell && !targetCell.className.includes('grid-cell')) {
-            targetCell = targetCell.parentElement;
-        }
-
-        // Proceed if the target is a grid cell and it's empty
-        if (targetCell && targetCell.className.includes('grid-cell') && targetCell.children.length === 1) {
-            displayBlockContent(draggedElement, targetCell);
-            gridState[row][col] = data; // Update grid state with block ID
-        } else {
-            alert("This cell is already occupied.");
-        }
+    // Use the cell directly
+    if (cell && cell.className.includes('grid-cell') && cell.children.length === 1) {
+        displayBlockContent(draggedElement, cell);
+        const row = cell.getAttribute('data-row');
+        const col = cell.getAttribute('data-column');
+        gridState[row - 1][col - 1] = data; // Update grid state with block ID
+    } else {
+        alert("This cell is already occupied.");
     }
+}
 
 
-    function displayBlockContent(block, cell) {
-        const content = block.getAttribute('data-content');
-        if (content) {
-            const contentDiv = document.createElement('div');
-            contentDiv.innerHTML = content;
-            contentDiv.dataset.blockId = block.id; // Store the block's original ID
-            cell.appendChild(contentDiv);
-            cell.setAttribute('data-block-id', block.id); // Set block ID attribute on the cell
-        }
+
+function displayBlockContent(block, cell) {
+    const content = block.getAttribute('data-content');
+    if (content) {
+        const contentDiv = document.createElement('div');
+        contentDiv.innerHTML = content;
+        contentDiv.dataset.blockId = block.id; // Store the block's original ID
+        cell.appendChild(contentDiv);
+        cell.setAttribute('data-block-id', block.id); // Set block ID attribute on the cell
     }
+}
+
 
 
 
@@ -276,31 +367,33 @@
 
 
     // Save the grid configuration to the server
-    document.getElementById('saveChanges').addEventListener('click', function() {
-        const gridCells = document.querySelectorAll('.grid-cell');
-        const gridData = [];
+// Save the grid configuration to the server
+document.getElementById('saveChanges').addEventListener('click', function() {
+    const gridCells = document.querySelectorAll('.grid-cell');
+    const gridData = [];
 
-        gridCells.forEach((cell, index) => {
-            // Calculate width and height based on your grid's logic
-            const width = calculateCellWidth(cell);
-            const height = calculateCellHeight(cell);
-            const blockId = cell.getAttribute('data-block-id') || null; // Use null if no blockId
-            const row = Math.floor(index / numColumns) + 1;
-            const column = (index % numColumns) + 1;
+    gridCells.forEach((cell) => {
+        // Retrieve the row and column from the cell's dataset
+        const row = cell.getAttribute('data-row');
+        const column = cell.getAttribute('data-column');
+        const width = cell.offsetWidth; // Outer width including padding and borders
+        const height = cell.offsetHeight; // Outer height including padding and borders
+        const blockId = cell.getAttribute('data-block-id') || null; // Use null if no blockId
 
-            // Push all cells into gridData, including empty ones
-            gridData.push({
-                row,
-                column,
-                width,
-                height,
-                blockId
-            });
+        // Push cell data into gridData
+        gridData.push({
+            row,
+            column,
+            width,
+            height,
+            blockId
         });
-
-        // Send this data to the server
-        saveGridConfiguration(gridData, pageId);
     });
+
+    // Send this data to the server
+    saveGridConfiguration(gridData, pageId);
+});
+
 
     function calculateCellWidth(cell) {
     return cell.offsetWidth; // Outer width including padding and borders
@@ -309,6 +402,29 @@
 function calculateCellHeight(cell) {
     return cell.offsetHeight;
 }
+
+document.getElementById('deleteGrid').addEventListener('click', function() {
+        if (confirm('Are you sure you want to delete the grid layout?')) {
+            fetch('/admin/pagedesign/' + <?php echo json_encode($pagedesign->id); ?> + '/delete-grid', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                alert(data.message);
+                // Optionally, reload the page or redirect
+                location.reload();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error deleting grid');
+            });
+        }
+    });
 
 
 

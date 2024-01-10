@@ -22,15 +22,16 @@
             <textarea class="form-control" name="content" id="content" rows="5" required>{{ $page->content }}</textarea>
         </div>
 
-        <div class="form-group form-check pl-0">
-            <input type="checkbox" class="form-check-input" name="is_blog" id="is_blog">
+        <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" name="is_blog" id="is_blog" {{ $page->is_blog ? 'checked' : '' }}>
             <label class="form-check-label" for="is_blog">This is a blog page</label>
         </div>
 
-        <div class="form-check">
+        <div class="form-group form-check">
             <input type="checkbox" class="form-check-input" name="published" id="published" {{ $page->published ? 'checked' : '' }}>
             <label class="form-check-label" for="published">Published</label>
         </div>
+
 
         <button type="submit" class="btn btn-primary">Update</button>
     </form>

@@ -43,6 +43,8 @@ Route::resource('admin/blocks', ContentBlockController::class);
 Route::resource('/admin/menus', MenuController::class);
 Route::resource('/admin/pagedesign', PageDesignController::class);
 Route::post('/admin/pagedesign/{pagedesign}/save-grid', [PageDesignController::class, 'saveGrid']);
+Route::post('/admin/pagedesign/{pagedesign}/delete-grid', [PageDesignController::class, 'deleteGrid']);
+
 
 
 

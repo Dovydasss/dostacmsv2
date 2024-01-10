@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Menu;
 use App\Models\Page;
+use App\Models\Colors;
 use App\Models\GridSetting;
 use App\Models\ContentBlock;
 use Illuminate\Http\Request;
@@ -147,6 +148,7 @@ public function showBySlug($slug)
         if ($page) {
             $menusToShow = $page->menus()->with('menuItems')->get();
         }
+
     
         // Return the contact form view
         return view('admin.contact.form', compact('contactSetting', 'menusToShow'));

@@ -113,6 +113,15 @@ class MenuController extends Controller
         return redirect('admin/menus')->with('success', 'Menu updated successfully.');
     }
 
+
+    public function showLogin()
+    {
+        $menusToShow = MenuItem::all();
+        return view('auth.login', compact('menusToShow'));
+    }
+    
+  
+
     /**
      * Remove the specified menu item from storage.
      *

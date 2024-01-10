@@ -1,6 +1,6 @@
 <?php
 
-// app/Mail/ContactFormMail.php
+
 
 namespace App\Mail;
 
@@ -24,7 +24,7 @@ class ContactFormMail extends Mailable
     {
         return $this->from($this->contactData['email']) // Sender's email
                     ->subject('New Contact Form Submission')
-                    ->view('emails.contact') // Create this view with your email template
+                    ->view('emails.contact') // 
                     ->with([
                         'contactData' => $this->contactData,
                     ]);

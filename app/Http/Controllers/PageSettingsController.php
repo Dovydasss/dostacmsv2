@@ -49,14 +49,17 @@ class PageSettingsController extends Controller
         $pageSetting->title = $validatedData['title'];
         $pageSetting->description = $validatedData['description'];
 
-        if ($request->hasFile('icon')) {
-            if ($pageSetting->icon) {
-                Storage::delete($pageSetting->icon);
-            }
 
-            // Store the new icon and update the icon path
-            $path = $request->file('icon')->store('public/icons');
-            $pageSetting->icon = $path;
+        if ($request->hasFile('icon')) {
+            // Delete old icon if it exists
+            if ($pageSetting->icon && file_exists(public_path($pageSetting->icon))) {
+                unlink(public_path($pageSetting->icon));
+            }
+    
+            $file = $request->file('icon');
+            $filename = 'icon-' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('icon'), $filename);
+            $pageSetting->icon = 'icon/' . $filename;
         }
 
         $pageSetting->save();
@@ -93,9 +96,12 @@ class PageSettingsController extends Controller
         $settings->title = $validatedData['title'];
         $settings->description = $validatedData['description'];
 
+
         if ($request->hasFile('icon')) {
-            $path = $request->file('icon')->store('public/icons');
-            $settings->icon = $path;
+            $file = $request->file('icon');
+            $filename = 'icon-' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('icon'), $filename);
+            $settings->icon = 'icon/' . $filename;
         }
 
         $settings->save();

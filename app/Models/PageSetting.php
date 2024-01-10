@@ -23,12 +23,5 @@ class PageSetting extends Model
      *
      * @return string
      */
-    public function getIconUrlAttribute()
-    {
-        if ($this->icon) {
-            return asset('storage/' . $this->icon);
-        }
-
-        return null;
-    }
+  
 }

@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
+use App\Models\Page;
 use App\Models\User;
-use Illuminate\Foundation\Auth\RegistersUsers;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Foundation\Auth\RegistersUsers;
+
 
 class RegisterController extends Controller
 {
@@ -41,6 +43,18 @@ class RegisterController extends Controller
         $this->middleware('guest');
     }
 
+    public function showRegistrationForm()
+    {
+        $registerPage = Page::where('slug', 'register')->first();
+        if ($registerPage) {
+            $menusToShow = $registerPage->menus()->with('menuItems')->get();
+        } else {
+            $menusToShow = collect(); 
+        }
+
+        return view('auth.register', compact('menusToShow'));
+    }
+
     /**
      * Get a validator for an incoming registration request.
      *
@@ -70,4 +84,6 @@ class RegisterController extends Controller
             'password' => Hash::make($data['password']),
         ]);
     }
+
+
 }

@@ -10,7 +10,7 @@ class ColorController extends Controller
     public function show()
     {
         $settingsCollection = Colors::pluck('color', 'name');
-        $settings = $settingsCollection->toArray(); // Convert the collection to an array
+        $settings = $settingsCollection->toArray(); 
     
         return view('admin.colors.index', compact('settings'));
     }

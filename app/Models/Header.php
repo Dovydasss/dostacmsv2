@@ -13,7 +13,8 @@ class Header extends Model
     protected $fillable = [
         'header_image',
         'width',
-        'height'
+        'height',
+        'show_header'
 
     ];
 

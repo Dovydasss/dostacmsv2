@@ -1,18 +1,11 @@
-@php
-    use App\Models\Colors;
-
-    $menuBackgroundColor = Colors::where('name', 'menu_background_color')->value('color') ?? '#000000';
-    $menuTextColor = Colors::where('name', 'menu_text_color')->value('color') ?? '#000000';
-
-@endphp
 <style>
     .custom-navbar {
         font-family: 'Poppins', sans-serif;
         font-size: 1.1rem; 
-        background-color: {{ $menuBackgroundColor }}!important;
+        background-color: {{ $colors['menu_background_color'] ?? '#000000' }}!important;
     }
     .custom-navbar .nav-link {
-        color: {{ $menuTextColor }}!important; 
+        color: {{ $colors['menu_text_color'] ?? '#000000' }};!important; 
         transition: color 0.3s, transform 0.3s; 
     }
     .custom-navbar .nav-link:hover {
@@ -30,7 +23,7 @@
         <nav class="navbar navbar-expand navbar-light bg-light custom-navbar">
             <div class="container-fluid justify-content-center">
                 <ul class="navbar-nav">
-                    @foreach ($menu->menuItems as $menuItem) 
+                @foreach ($menu->menuItemsOrdered as $menuItem) 
                         <li class="nav-item">
                             <a class="nav-link" href="{{ $menuItem->url }}">{{ $menuItem->title }}</a>
                         </li>

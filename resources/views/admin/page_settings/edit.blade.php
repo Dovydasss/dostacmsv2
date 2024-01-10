@@ -30,7 +30,7 @@
             </div>
             @if($pageSetting->icon)
                 <div class="mt-2">
-                    <img id="icon-preview" src="{{ asset('storage/icons/' . basename($pageSetting->icon_url)) }}" alt="Page Icon" width="50" height="50">
+                    <img id="icon-preview" src="{{ asset($pageSettings->icon) }}" alt="Page Icon" width="30" height="30">
                 </div>
             @endif
         </div>

@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Models\Menu;
+use App\Models\Colors;
+use App\Models\MenuItem;
+use App\Models\Page;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -28,6 +32,8 @@ class LoginController extends Controller
      */
     protected $redirectTo = '/admin';
 
+   
+
     /**
      * Create a new controller instance.
      *
@@ -37,4 +43,20 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
+
+    public function showLoginForm()
+    {
+        $loginPage = Page::where('slug', 'login')->first();
+        if ($loginPage) {
+            $menusToShow = $loginPage->menus()->with('menuItems')->get();
+        } else {
+            $menusToShow = collect(); 
+        }
+    
+
+        return view('auth.login', compact('menusToShow'));
+    }
+    
+
+    
 }

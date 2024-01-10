@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container mt-4">
-    <h1>Page Settings</h1>
+    <h1>Site Settings</h1>
 
     @if(session('success'))
     <div class="alert alert-success">
@@ -26,7 +26,7 @@
                 <td>{{ $settings->description }}</td>
                 <td>
                     @if($settings->icon)
-                    <img src="{{ asset('storage/icons/' . basename($settings->icon_url)) }}" alt="Page Icon" width="50" height="50">
+                    <img src="{{ asset($pageSettings->icon) }}" alt="Page Icon" width="30" height="30">
                     @endif
                 </td>
                 <td>

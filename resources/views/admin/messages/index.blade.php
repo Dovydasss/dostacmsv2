@@ -23,7 +23,7 @@
                     <td>{{ $message->title }}</td>
                     <td>{{ $message->message }}</td>
                     <td>
-                        <a href="#" class="btn btn-info btn-sm">Edit</a>
+                      
                         <form action="{{ url('admin/messages', $message->id) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')

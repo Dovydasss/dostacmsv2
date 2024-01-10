@@ -11,7 +11,7 @@
 
     <form action="{{ route('header.update') }}" method="POST" enctype="multipart/form-data">
         @csrf
-        @method('POST') <!-- Ensure this is POST for file upload -->
+        @method('POST')
 
         <div class="mb-3">
             <label for="header_image" class="form-label">Header Image</label>
@@ -31,7 +31,12 @@
 
         <div class="mb-3">
             <label for="height" class="form-label">Header Height (%)</label>
-            <input type="text" class="form-control" name="height" id="height" value="{{ optional($header)->height ?? 'auto' }}">
+            <input type="text" class="form-control" name="height" id="height" value="{{ optional($header)->height ?? '25' }}">
+        </div>
+
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" name="show_header" id="show_header" {{ optional($header)->show_header ? 'checked' : '' }}>
+            <label class="form-check-label" for="show_header">Show Header</label>
         </div>
 
         <button type="submit" class="btn btn-primary">Save Header</button>

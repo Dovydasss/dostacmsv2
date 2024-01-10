@@ -8,7 +8,7 @@
     <meta name="author" content="LTMD Networks" />
     <title>{{ $pageSettings->title ?? 'Default Title' }}</title>
     @if($pageSettings && $pageSettings->icon)
-    <link rel="icon" href="{{ Storage::url($pageSettings->icon) }}" type="image/png">
+    <link rel="icon" href="{{ asset($pageSettings->icon) }}" type="image/png">
     @endif
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
@@ -49,18 +49,14 @@
         });
     </script>
 
-@php
-    use App\Models\Colors;
 
-    $backgroundColor = Colors::where('name', 'background_color')->value('color') ?? '#00000';
-    $textColor = Colors::where('name', 'text_color')->value('color') ?? '#00000';
-@endphp
 <style>
         html, body {
             height: 100%;
             margin: 0;
-            color: {{ $textColor }};
-            background-color: {{ $backgroundColor }};
+            color: {{ $colors['text_color'] ?? '#000000' }};
+
+            background-color: {{ $colors['background_color'] ?? '#000000' }};
             
         }
 

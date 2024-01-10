@@ -1,14 +1,8 @@
-@php
-    use App\Models\Colors;
-
-    $footerBackgroundColor = Colors::where('name', 'footer_background_color')->value('color') ?? '#00000';
-    $footerTextColor = Colors::where('name', 'footer_text_color')->value('color') ?? '#00000';
-@endphp
 
 <style>
     .footer {
-        background-color: {{ $footerBackgroundColor }};
-        color: {{ $footerTextColor }};
+        background-color: {{ $colors['footer_background_color'] ?? '#000000' }};
+        color: {{ $colors['footer_text_color'] ?? '#000000' }};
     }
 </style>
 <footer class="footer">

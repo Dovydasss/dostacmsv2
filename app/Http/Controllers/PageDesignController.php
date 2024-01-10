@@ -23,9 +23,28 @@ class PageDesignController extends Controller
         $allBlocks = ContentBlock::all();
         $menusToShow = $pagedesign->menus()->with('menuItems')->get();
         $gridSetting = GridSetting::where('page_id', $pagedesign->id)->first();
-
-    return view('admin.pagedesign.edit', compact('pagedesign', 'contentBlocks', 'allBlocks', 'menusToShow', 'gridSetting'));
+    
+        // Fetch grid layout from the database
+        $gridLayout = $gridSetting ? json_decode($gridSetting->layout, true) : null;
+    
+        // Process blocks to include their content
+        if ($gridLayout) {
+            foreach ($gridLayout as &$gridItem) {
+                if ($gridItem['blockId']) {
+                    $blockId = str_replace('block-', '', $gridItem['blockId']); // Assuming blockId is prefixed with 'block-'
+                    $block = ContentBlock::find($blockId);
+                    if ($block) {
+                        $gridItem['content'] = $block->content; // Add content to the grid item
+                    }
+                }
+            }
+            unset($gridItem); // Break the reference with the last element
+        }
+    
+        return view('admin.pagedesign.edit', compact('pagedesign', 'contentBlocks', 'allBlocks', 'menusToShow', 'gridSetting', 'gridLayout'));
     }
+
+    
 
     public function saveGrid(Request $request, Page $pagedesign) {
         try {
@@ -47,9 +66,19 @@ class PageDesignController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    public function deleteGrid(Page $pagedesign) {
+        try {
+            $gridSetting = GridSetting::where('page_id', $pagedesign->id)->first();
     
+            if ($gridSetting) {
+                $gridSetting->delete(); // Delete the grid setting
+            }
     
-    
-    
+            return response()->json(['message' => 'Grid deleted successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
     
 }

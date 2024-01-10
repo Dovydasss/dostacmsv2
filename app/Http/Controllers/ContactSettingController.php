@@ -163,7 +163,7 @@ class ContactSettingController extends Controller
         $message->save();
     
         // Send the email
-        Mail::to($contactSetting->recipient_email)->send(new ContactFormMail($validatedData));
+        // Mail::to($contactSetting->recipient_email)->send(new ContactFormMail($validatedData));
     
        
         return back()->with('success', 'Your message has been sent successfully!');

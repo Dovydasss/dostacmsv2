@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('header', function (Blueprint $table) {
             $table->id();
             $table->string('header_image')->nullable();
+            $table->boolean('show_header')->default(false);
             $table->timestamps();
         });
     }
